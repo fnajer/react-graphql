@@ -20,7 +20,7 @@ const NavBar = () => (
     </NavLink>
 
     {/* Title and Logo */}
-    <NavLink to="/">
+    <NavLink exact to="/">
       <Box display="flex" alignItems="center">
         <Box margin={2} width={50} height={50}>
           <Image
