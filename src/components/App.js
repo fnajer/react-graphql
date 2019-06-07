@@ -7,22 +7,30 @@ const strapi = new Strapi(apiUrl);
 
 
 class App extends Component {
+  state = {
+    brands: [],
+  }
+
   async componentDidMount() {
-    const response = await strapi.request('POST', '/graphql', {
-      "data": {
-        "query": `query {
-          brands {
-            _id
-            name
-            description
-            image {
+    try {
+      const response = await strapi.request('POST', '/graphql', {
+        "data": {
+          "query": `query {
+            brands {
+              _id
               name
+              description
+              image {
+                url
+              }
             }
-          }
-        }`
-      }
-    });
-    console.log(response);
+          }`
+        }
+      });
+      this.setState({ brands: response.data.brands });
+    } catch(err) {
+      console.error(err);
+    }
   }
 
   render() {
