@@ -49,17 +49,28 @@ class App extends Component {
             Brew Brands
           </Heading>
         </Box>
-        <Box display="flex" justifyContent="around">
+        {/* Brands */}
+        <Box 
+          dangerouslySetInlineStyle={{
+            __style: {
+              backgroundColor: '#d6c8ec'
+            }
+          }}
+          shape="rounded"
+          wrap display="flex" justifyContent="around"
+        >
           {brands.map(brand => (
             <Box 
               key={brand._id}
               width={200}
               margin={2}
+              paddingY={4}
             >
               <Card
                 image={
                   <Box height={200} width={200}>
                     <Image 
+                      fit="cover"
                       alt="Brand"
                       naturalHeight={1}
                       naturalWidth={1}
