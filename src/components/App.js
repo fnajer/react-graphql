@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Container, Box, Heading, Card, Image, Text, SearchField, Icon } from 'gestalt';
+import Loader from './Loader';
 import { Link } from 'react-router-dom';
 import "./App.css";
 import Strapi from 'strapi-sdk-javascript/build/main';
@@ -11,6 +12,7 @@ class App extends Component {
   state = {
     brands: [],
     searchTerm: '',
+    loadingBrands: true,
   }
 
   async componentDidMount() {
@@ -29,9 +31,10 @@ class App extends Component {
           }`
         }
       });
-      this.setState({ brands: response.data.brands });
+      this.setState({ brands: response.data.brands, loadingBrands: false });
     } catch(err) {
       console.error(err);
+      this.setState({ loadingBrands: false });
     }
   }
 
@@ -47,7 +50,7 @@ class App extends Component {
   }
 
   render() {
-    const { searchTerm } = this.state;
+    const { searchTerm, loadingBrands } = this.state;
     return (
       <Container>
         {/* Brands Search Field */}
@@ -124,6 +127,7 @@ class App extends Component {
             </Box>
           ))}
         </Box>
+        <Loader show={loadingBrands} accessibilityLabel="Loader Brands" />
       </Container>
     );
   }
