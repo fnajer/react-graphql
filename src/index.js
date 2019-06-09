@@ -8,6 +8,7 @@ import NavBar from './components/NavBar';
 import SignIn from './components/SignIn';
 import SignUp from './components/SignUp';
 import Checkout from './components/Checkout';
+import Brews from './components/Brews';
 import registerServiceWorker from './registerServiceWorker';
 
 const Root = () => (
@@ -19,6 +20,7 @@ const Root = () => (
           <Route path="/signin" component={SignIn} />
           <Route path="/signup" component={SignUp} />
           <Route path="/checkout" component={Checkout} />
+          <Route path="/:brandId" component={Brews} />
         </Switch>
       </React.Fragment>
       

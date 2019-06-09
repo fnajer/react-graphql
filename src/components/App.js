@@ -18,8 +18,8 @@ class App extends Component {
   async componentDidMount() {
     try {
       const response = await strapi.request('POST', '/graphql', {
-        "data": {
-          "query": `query {
+        data: {
+          query: `query {
             brands {
               _id
               name
@@ -120,7 +120,7 @@ class App extends Component {
                   <Text bold size="xl">{brand.name}</Text>
                   <Text>{brand.description}</Text>
                   <Text bold size="xl">
-                    <Link to={`/${brand._id}`}>See Brand</Link>
+                    <Link to={`/${brand._id}`}>See Brews</Link>
                   </Text>
                 </Box>
               </Card>
