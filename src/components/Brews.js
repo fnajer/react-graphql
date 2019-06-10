@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { Box, Heading, Text, Image, Card, Button, Mask, IconButton } from "gestalt";
 import { Link } from "react-router-dom";
+import { calculateTotalPrice } from '../utils';
 import Strapi from "strapi-sdk-javascript/build/main";
 const apiUrl = process.env.API_URL || "http://localhost:1337";
 const strapi = new Strapi(apiUrl);
@@ -152,7 +153,7 @@ class Brews extends Component {
               {cartItems.map(item => (
                 <Box key={item._id} display="flex" alignItems="center">
                   <Text>
-                    {item.name} x {item.quantity} - ${item.quantity * item.price}
+                    {item.name} x {item.quantity} - ${(item.quantity * item.price).toFixed(2)}
                   </Text>
                   <IconButton
                     iconColor="red"
@@ -170,7 +171,7 @@ class Brews extends Component {
                     <Text color="red">Please, select some items</Text>
                   )}
                 </Box>
-                <Text size="lg">Total: $3.99</Text>
+                <Text size="lg">Total: {calculateTotalPrice(cartItems)}</Text>
                 <Text>
                   <Link to="/checkout">Checkout</Link>
                 </Text>
