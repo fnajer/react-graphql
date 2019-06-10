@@ -13,6 +13,17 @@ class SignUp extends Component {
     this.setState({ [event.target.name]: value });
   }
 
+  handleSubmit = event => {
+    event.preventDefault();
+
+    if (this.isFormValid(this.state))
+      console.log('submitted');
+  }
+
+  isFormValid = ({ username, email, password}) => {
+    return username && email && password;
+  }
+
   render() {
     return (
       <Container>
@@ -33,7 +44,9 @@ class SignUp extends Component {
             display: "inline-block",
             textAlign: "center",
             maxWidth: 450
-          }}>
+          }}
+            onSubmit={this.handleSubmit}
+          >
             {/* Sign Up Form Heading */}
             <Box display="flex" direction="column" alignItems="center" marginBottom={2}>
               <Heading color="midnight">Lets Get Started</Heading>
