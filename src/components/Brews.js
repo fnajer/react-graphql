@@ -42,6 +42,23 @@ class Brews extends Component {
     }
   }
 
+  addToCart = brew => {
+    const alreadyInCart = this.state.cartItems.findIndex(
+      item => item._id === brew._id);
+    
+      if (alreadyInCart === -1) {
+        const updatedCart = this.state.cartItems.concat({
+          ...brew,
+          quantity: 1,
+        });
+        this.setState({ cartItems: updatedCart });
+      } else {
+        const updatedCart = [...this.state.cartItems];
+        updatedCart[alreadyInCart].quantity += 1;
+        this.setState({ cartItems: updatedCart });
+      }
+  }
+
   render() {
     const { brews, brand, cartItems } = this.state;
     return (
@@ -105,7 +122,7 @@ class Brews extends Component {
                     <Text color="orchid">${brew.price}</Text>
                     <Box marginTop={2}>
                       <Text bold size="xl">
-                        <Button color="blue" text="Add to Cart" />
+                        <Button onClick={() => this.addToCart(brew)} color="blue" text="Add to Cart" />
                       </Text>
                     </Box>
                   </Box>
