@@ -12,10 +12,14 @@ export const setCart = (items, cartKey = CART_KEY) => {
   if (localStorage)
     localStorage.setItem(cartKey, JSON.stringify(items));
 }
-export const getCart = () => {
-  if (localStorage && localStorage.getItem(CART_KEY))
-    return JSON.parse(localStorage.getItem(CART_KEY));
+export const getCart = (cartKey = CART_KEY) => {
+  if (localStorage && localStorage.getItem(cartKey))
+    return JSON.parse(localStorage.getItem(cartKey));
   return [];
+}
+export const clearCart = (cartKey = CART_KEY) => {
+  if (localStorage)
+    localStorage.removeItem(cartKey);
 }
 
 /* Auth */
@@ -24,7 +28,11 @@ export const setToken = (value, tokenKey = TOKEN_KEY) => {
     localStorage.setItem(tokenKey, JSON.stringify(value));
 }
 export const getToken = (tokenKey = TOKEN_KEY) => {
-  if (localStorage && localStorage.getItem(TOKEN_KEY))
-    return JSON.parse(localStorage.getItem(TOKEN_KEY));
+  if (localStorage && localStorage.getItem(tokenKey))
+    return JSON.parse(localStorage.getItem(tokenKey));
   return null;
+}
+export const clearToken = (tokenKey = TOKEN_KEY) => {
+  if (localStorage)
+    localStorage.removeItem(tokenKey);
 }

@@ -23,7 +23,6 @@ const Root = () => (
           <Route path="/:brandId" component={Brews} />
         </Switch>
       </React.Fragment>
-      
   </Router>
 );
 
