@@ -34,7 +34,6 @@ class SignUp extends Component {
     try {
       this.setState({ loading: true });
       const response = await strapi.register(username, email, password);
-      console.log(response);
       setToken(response.jwt);
       this.setState({ loading: false });
       this.redirectUser("/");
