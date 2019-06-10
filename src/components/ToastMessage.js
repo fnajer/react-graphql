@@ -8,7 +8,7 @@ const ToastMessage = ({ show, message }) => {
       position="fixed" 
       dangerouslySetInlineStyle={{
         __style: {  
-          bottom: 300,
+          bottom: 200,
           left: '50%',
           transform: 'translateX(-50%)'
         }
