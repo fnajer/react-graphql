@@ -1,6 +1,10 @@
 import React, { Component } from 'react';
 import { Container, Box, Heading, Text, TextField, Button } from 'gestalt';
 import ToastMessage from './ToastMessage';
+import { setToken } from '../utils';
+import Strapi from 'strapi-sdk-javascript/build/main';
+const apiUrl = process.env.API_URL || 'http://localhost:1337';
+const strapi = new Strapi(apiUrl);
 
 class SignUp extends Component {
   state = {
@@ -9,6 +13,7 @@ class SignUp extends Component {
     password: '',
     toast: false,
     toastMessage: '',
+    loading: false,
   }
 
   handleChange = ({ event, value }) => {
@@ -16,14 +21,30 @@ class SignUp extends Component {
     this.setState({ [event.target.name]: value });
   }
 
-  handleSubmit = event => {
+  handleSubmit = async event => {
     event.preventDefault();
+    const { username, email, password } = this.state;
 
-    if (this.isFormValid(this.state))
-      console.log('submitted');
-    else
+    if (!this.isFormValid(this.state)) {
       this.showToast("Fill in all fields");
+      return;
+    }  
+    
+    // Sign up user
+    try {
+      this.setState({ loading: true });
+      const response = await strapi.register(username, email, password);
+      console.log(response);
+      setToken(response.jwt);
+      this.setState({ loading: false });
+      this.redirectUser("/");
+    } catch(err) {
+      this.setState({ loading: false });
+      this.showToast(err.message);
+    } 
   }
+
+  redirectUser = path => this.props.history.push(path);
 
   isFormValid = ({ username, email, password}) => {
     return username && email && password;
@@ -35,7 +56,7 @@ class SignUp extends Component {
   }
 
   render() {
-    const { toast, toastMessage } = this.state;
+    const { toast, toastMessage, loading } = this.state;
     return (
       <Container>
         <Box
@@ -70,7 +91,7 @@ class SignUp extends Component {
             <TextField id="email" name="email" type="email" placeholder="Email Address" onChange={this.handleChange}/>
             {/* Password Input */}
             <TextField id="password" name="password" type="password" placeholder="Password" onChange={this.handleChange}/>
-            <Button inline text="Submit" color="blue" type="submit"/>
+            <Button inline disabled={loading} text="Submit" color="blue" type="submit"/>
           </form>
         </Box>
         <ToastMessage show={toast} message={toastMessage}/>
