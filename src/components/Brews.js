@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { Box, Heading, Text, Image, Card, Button, Mask, IconButton } from "gestalt";
 import { Link } from "react-router-dom";
-import { calculateTotalPrice } from '../utils';
+import { calculateTotalPrice, setCart, getCart } from '../utils';
 import Strapi from "strapi-sdk-javascript/build/main";
 const apiUrl = process.env.API_URL || "http://localhost:1337";
 const strapi = new Strapi(apiUrl);
@@ -36,7 +36,8 @@ class Brews extends Component {
       });
       this.setState({
         brews: response.data.brand.brews,
-        brand: response.data.brand.name
+        brand: response.data.brand.name,
+        cartItems: getCart(),
       });
     } catch (err) {
       console.error(err);
@@ -48,22 +49,22 @@ class Brews extends Component {
       item => item._id === brew._id);
     
       if (alreadyInCart === -1) {
-        const updatedCart = this.state.cartItems.concat({
+        const updatedItems = this.state.cartItems.concat({
           ...brew,
           quantity: 1,
         });
-        this.setState({ cartItems: updatedCart });
+        this.setState({ cartItems: updatedItems }, () => setCart(updatedItems));
       } else {
-        const updatedCart = [...this.state.cartItems];
-        updatedCart[alreadyInCart].quantity += 1;
-        this.setState({ cartItems: updatedCart });
+        const updatedItems = [...this.state.cartItems];
+        updatedItems[alreadyInCart].quantity += 1;
+        this.setState({ cartItems: updatedItems }, () => setCart(updatedItems));
       }
   }
 
   deleteItemFromCart = itemId => {
     const filteredItems = this.state.cartItems.filter(
       item => item._id !== itemId);
-    this.setState({ cartItems: filteredItems });
+    this.setState({ cartItems: filteredItems }, () => setCart(filteredItems));
   }
 
   render() {
@@ -103,7 +104,7 @@ class Brews extends Component {
               <Box key={brew._id} width={210} margin={2} paddingY={4}>
                 <Card
                   image={
-                    <Box height={250} width={200}>
+                    <Box height={250} width={210}>
                       <Image
                         fit="cover"
                         alt="Brew"
