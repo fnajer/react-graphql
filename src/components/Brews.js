@@ -1,14 +1,16 @@
-import React, { Component } from 'react';
-import { Box, Heading, Text, Image, Card, Button } from 'gestalt';
-import Strapi from 'strapi-sdk-javascript/build/main';
-const apiUrl = process.env.API_URL || 'http://localhost:1337';
+import React, { Component } from "react";
+import { Box, Heading, Text, Image, Card, Button, Mask } from "gestalt";
+import { Link } from "react-router-dom";
+import Strapi from "strapi-sdk-javascript/build/main";
+const apiUrl = process.env.API_URL || "http://localhost:1337";
 const strapi = new Strapi(apiUrl);
 
 class Brews extends Component {
   state = {
     brews: [],
-    brand: '',
-  }
+    brand: "",
+    cartItems: []
+  };
 
   async componentDidMount() {
     try {
@@ -31,70 +33,73 @@ class Brews extends Component {
           }`
         }
       });
-      this.setState({ brews: response.data.brand.brews, brand: response.data.brand.name });
-    } catch(err) {
+      this.setState({
+        brews: response.data.brand.brews,
+        brand: response.data.brand.name
+      });
+    } catch (err) {
       console.error(err);
     }
   }
 
   render() {
-    const { brews, brand } = this.state;
+    const { brews, brand, cartItems } = this.state;
     return (
       <Box
+        marginTop={4}
         display="flex"
         justifyContent="center"
         alignItems="start"
+        dangerouslySetInlineStyle={{
+          __style: {
+            flexWrap: "wrap-reverse"
+          }
+        }}
       >
         {/* Brews Section */}
-        <Box
-          display="flex"
-          direction="column"
-          alignItems="center"
-        >
+        <Box display="flex" direction="column" alignItems="center">
           {/* Brews Header */}
           <Box margin={2}>
-            <Heading color="orchid">
-              {brand}
-            </Heading>
+            <Heading color="orchid">{brand}</Heading>
           </Box>
           {/* Brews */}
-          <Box 
+          <Box
             dangerouslySetInlineStyle={{
               __style: {
-                backgroundColor: '#bdcdd9'
+                backgroundColor: "#bdcdd9"
               }
             }}
             shape="rounded"
-            wrap display="flex" justifyContent="center"
+            wrap
+            display="flex"
+            justifyContent="center"
             padding={4}
           >
             {brews.map(brew => (
-              <Box 
-                key={brew._id}
-                width={210}
-                margin={2}
-                paddingY={4}
-              >
+              <Box key={brew._id} width={210} margin={2} paddingY={4}>
                 <Card
                   image={
                     <Box height={250} width={200}>
-                      <Image 
+                      <Image
                         fit="cover"
                         alt="Brew"
                         naturalHeight={1}
                         naturalWidth={1}
-                        src={`${apiUrl}${brew.image.url}`}/>
+                        src={`${apiUrl}${brew.image.url}`}
+                      />
                     </Box>
                   }
                 >
-                  <Box 
+                  <Box
                     display="flex"
                     justifyContent="center"
                     alignItems="center"
                     direction="column"
                   >
                     <Box marginBottom={2}>
-                      <Text bold size="xl">{brew.name}</Text>
+                      <Text bold size="xl">
+                        {brew.name}
+                      </Text>
                     </Box>
                     <Text>{brew.description}</Text>
                     <Text color="orchid">${brew.price}</Text>
@@ -109,8 +114,34 @@ class Brews extends Component {
             ))}
           </Box>
         </Box>
+
+        {/* User Cart */}
+        <Box alignSelf="end" marginTop={2} marginLeft={8}>
+          <Mask shape="rounded" wash>
+            <Box display="flex" direction="column" alignItems="center" padding={4}>
+              {/* Cart Heading */}
+              <Heading align="center" size="md">
+                Your Cart
+              </Heading>
+              <Text color="gray" italic>{cartItems.length} items selected</Text>
+
+              {/* Cart Items (will add) */}
+              <Box display="flex" direction="column" alignItems="center" justifyContent="center">
+                <Box margin={2}>
+                  {cartItems.length === 0 && (
+                    <Text color="red">Please, select some items</Text>
+                  )}
+                </Box>
+                <Text size="lg">Total: $3.99</Text>
+                <Text>
+                  <Link to="/checkout">Checkout</Link>
+                </Text>
+              </Box>
+            </Box>
+          </Mask>
+        </Box>
       </Box>
-    )
+    );
   }
 }
 
