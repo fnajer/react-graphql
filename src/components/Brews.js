@@ -59,6 +59,12 @@ class Brews extends Component {
       }
   }
 
+  deleteItemFromCart = itemId => {
+    const filteredItems = this.state.cartItems.filter(
+      item => item._id !== itemId);
+    this.setState({ cartItems: filteredItems });
+  }
+
   render() {
     const { brews, brand, cartItems } = this.state;
     return (
@@ -137,7 +143,7 @@ class Brews extends Component {
           <Mask shape="rounded" wash>
             <Box display="flex" direction="column" alignItems="center" padding={4}>
               {/* Cart Heading */}
-              <Heading align="center" size="md">
+              <Heading align="center" size="sm">
                 Your Cart
               </Heading>
               <Text color="gray" italic>{cartItems.length} items selected</Text>
@@ -153,6 +159,7 @@ class Brews extends Component {
                     icon="cancel"
                     size="sm"
                     accessibilityLabel="Delete Item"
+                    onClick={() => this.deleteItemFromCart(item._id)}
                   />
                 </Box>
               ))}
