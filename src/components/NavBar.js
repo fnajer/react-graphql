@@ -47,9 +47,12 @@ const UnAuthNavBar = () => (
             naturalWidth={1}
           />
         </Box>
-        <Heading size="xs" color="orange">
-          Brew
-        </Heading>
+        {/* Title */}
+        <div className="main_logo">
+          <Heading size="xs" color="orange">
+            Brew
+          </Heading>
+        </div>
       </Box>
     </NavLink>
 
@@ -90,9 +93,12 @@ const AuthNavBar = ({ handleSignOut }) => (
             naturalWidth={1}
           />
         </Box>
-        <Heading size="xs" color="orange">
-          Brew
-        </Heading>
+        {/* Title */}
+        <div className="main_logo">
+          <Heading size="xs" color="orange">
+            Brew
+          </Heading>
+        </div>
       </Box>
     </NavLink>
 
