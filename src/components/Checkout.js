@@ -1,8 +1,12 @@
 import React, { Component } from 'react';
+import { withRouter } from 'react-router-dom';
 import { Container, Box, Heading, TextField, Text, Button, Modal, Spinner } from 'gestalt';
 import ToastMessage from './ToastMessage';
 import { Elements, StripeProvider, CardElement, injectStripe } from 'react-stripe-elements';
-import { getCart, calculateTotalPrice } from '../utils';
+import { getCart, calculateTotalPrice, calculateAmount, clearCart } from '../utils';
+import Strapi from 'strapi-sdk-javascript/build/main';
+const apiUrl = process.env.API_URL || 'http://localhost:1337';
+const strapi = new Strapi(apiUrl);
 
 class _CheckoutForm extends Component {
   state = {
@@ -41,12 +45,38 @@ class _CheckoutForm extends Component {
     return address && postalCode && city && confirmationEmailAddress;
   }
 
-  showToast = toastMessage => {
+  showToast = (toastMessage, redirect = false) => {
     this.setState({ toast: true, toastMessage });
-    setTimeout(() => this.setState({ toast: false, toastMessage: '' }), 5000);
+    setTimeout(() => this.setState({ toast: false, toastMessage: '' },
+      () => redirect && this.props.history.push('/')
+    ), 5000);
   }
 
-  handleSubmitOrder = () => {}
+  handleSubmitOrder = async () => {
+    const { address, postalCode, city, cartItems } = this.state;
+    const amount = calculateAmount(cartItems);
+    this.setState({ orderProcessing: true });
+    // Process order
+    try {
+      const response = await this.props.stripe.createToken();
+      console.log(response);
+      const token = response.token.id;
+      await strapi.createEntry("orders", {
+        token,
+        address,
+        postalCode,
+        city,
+        brews: cartItems,
+        amount
+      });
+      this.setState({ modal: false, orderProcessing: false });
+      clearCart();
+      this.showToast("Your order has been successfully submitted!", true);
+    } catch(err) {
+      this.setState({ modal: false, orderProcessing: false });
+      this.showToast(err.message);
+    }
+  } 
 
   closeModal = () => this.setState({ modal: false });
 
@@ -101,7 +131,7 @@ class _CheckoutForm extends Component {
               {/* Shipping Address Input */}
               <TextField id="address" name="address" type="text" placeholder="Shipping Address" onChange={this.handleChange}/>
               {/* Postal Code Input */}
-              <TextField id="postalCode" name="postalCode" type="number" placeholder="Postal Code" onChange={this.handleChange}/>
+              <TextField id="postalCode" name="postalCode" type="text" placeholder="Postal Code" onChange={this.handleChange}/>
               {/* City Input */}
               <TextField id="city" name="city" type="text" placeholder="City" onChange={this.handleChange}/>
               {/* Password Input */}
@@ -141,14 +171,6 @@ const ConfirmationModal = ({ handleSubmitOrder, closeModal, cartItems, orderProc
     footer={
       <Box display="flex" marginLeft={-1} marginRight={-1} justifyContent="center">
         <Box padding={1}>
-          <Button
-            onClick={closeModal}
-            disabled={orderProcessing}
-            text="Cancel"
-            size="lg"
-          />
-        </Box>
-        <Box padding={1}>
           <Button 
             color="red"
             onClick={handleSubmitOrder}
@@ -157,10 +179,19 @@ const ConfirmationModal = ({ handleSubmitOrder, closeModal, cartItems, orderProc
             size="lg"
           />
         </Box>
+        <Box padding={1}>
+          <Button
+            onClick={closeModal}
+            disabled={orderProcessing}
+            text="Cancel"
+            size="lg"
+          />
+        </Box>
       </Box>
     }
   >
     {/* Order Summary */}
+    {!orderProcessing &&
     <Box display="flex" direction="column" justifyContent="center" alignItems="center" color="lightWash" padding={2}>
       {cartItems.map(item => (
         <Box key={item._id} padding={1}>
@@ -174,15 +205,15 @@ const ConfirmationModal = ({ handleSubmitOrder, closeModal, cartItems, orderProc
           Total Price: {calculateTotalPrice(cartItems)}
         </Text>
       </Box>
-    </Box>
+    </Box>}
 
     {/* Order Proccesing Spinner */}
     <Spinner show={orderProcessing} accessibilityLabel="Order Proccesing Spinner"/>
-    {orderProcessing && <Text>Submitting Order...</Text>}
+    {orderProcessing && <Text align="center">Submitting Order...</Text>}
   </Modal>
 );
 
-const CheckoutForm = injectStripe(_CheckoutForm);
+const CheckoutForm = withRouter(injectStripe(_CheckoutForm));
 
 const Checkout = () => (
   <StripeProvider apiKey="pk_test_4ejNg5YPuzxx0QI3oBf9Y8Do00bW8SxMKx">

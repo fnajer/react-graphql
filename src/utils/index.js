@@ -6,6 +6,11 @@ export const calculateTotalPrice = items => {
     .reduce((acc, item) => acc + item.quantity * item.price, 0)
     .toFixed(2)}`;
 }
+export const calculateAmount = items => {
+  return Number(items
+    .reduce((acc, item) => acc + item.quantity * item.price, 0)
+    .toFixed(2));
+}
 
 /* Cart */
 export const setCart = (items, cartKey = CART_KEY) => {
